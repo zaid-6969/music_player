@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Music Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .music-player {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .cover {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: rotate 20s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .cover.active {
+            animation-play-state: running;
+        }
+
+        .cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .song-info {
+            margin-bottom: 20px;
+        }
+
+        .song-info h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .song-info p {
+            font-size: 16px;
+            color: #aaa;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 6px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .progress {
+            background: #4a00e0;
+            height: 100%;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            margin: 0 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .controls button:hover {
+            color: #4a00e0;
+        }
+
+        .controls button.play-pause {
+            background: #4a00e0;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .volume-container i {
+            margin-right: 10px;
+            color: #aaa;
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #4a00e0;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="music-player">
+        <div class="cover">
+            <img src="https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Album Cover">
+        </div>
+        
+        <div class="song-info">
+            <h2>Summer Vibes</h2>
+            <p>Chill Wave</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress"></div>
+        </div>
+        
+        <div class="time-info">
+            <span class="current-time">0:00</span>
+            <span class="duration">3:45</span>
+        </div>
+        
+        <div class="controls">
+            <button class="prev-btn"><i class="fas fa-step-backward"></i></button>
+            <button class="play-pause-btn play-pause"><i class="fas fa-play"></i></button>
+            <button class="next-btn"><i class="fas fa-step-forward"></i></button>
+        </div>
+        
+        <div class="volume-container">
+            <i class="fas fa-volume-down"></i>
+            <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="0.7">
+        </div>
+    </div>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    
+    <script>
+        // DOM Elements
+        const cover = document.querySelector('.cover');
+        const songTitle = document.querySelector('.song-info h2');
+        const artistName = document.querySelector('.song-info p');
+        const progress = document.querySelector('.progress');
+        const currentTimeEl = document.querySelector('.current-time');
+        const durationEl = document.querySelector('.duration');
+        const progressContainer = document.querySelector('.progress-container');
+        const playPauseBtn = document.querySelector('.play-pause-btn');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        const volumeSlider = document.querySelector('.volume-slider');
+        
+        const songs = [
+            {
+                title: "Summer Vibes",
+                artist: "Chill Wave",
+                cover: "https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+            },
+            {
+                title: "Night Drive",
+                artist: "Synth Dreams",
+                cover: "https://images.unsplash.com/photo-1518604666860-9ed391f76460?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+            },
+            {
+                title: "Morning Coffee",
+                artist: "Jazz Lounge",
+                cover: "https://images.unsplash.com/photo-1517705008128-361805f42e86?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+            },
+            {
+                title: "Urban Jungle",
+                artist: "City Beats",
+                cover: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+            }
+        ];
+        
+        // Create audio element
+        const audio = new Audio();
+        let currentSongIndex = 0;
+        let isPlaying = false;
+        
+        // Load song
+        function loadSong(song) {
+            songTitle.textContent = song.title;
+            artistName.textContent = song.artist;
+            cover.innerHTML = `<img src="${song.cover}" alt="${song.title}">`;
+            audio.src = song.audio;
+        }
+        
+        // Play song
+        function playSong() {
+            isPlaying = true;
+            cover.classList.add('active');
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            audio.play();
+        }
+        
+        // Pause song
+        function pauseSong() {
+            isPlaying = false;
+            cover.classList.remove('active');
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            audio.pause();
+        }
+        
+        // Update progress bar
+        function updateProgress(e) {
+            if (isPlaying) {
+                const { duration, currentTime } = e.srcElement;
+                const progressPercent = (currentTime / duration) * 100;
+                progress.style.width = `${progressPercent}%`;
+                
+                // Calculate display for current time
+                const currentMinutes = Math.floor(currentTime / 60);
+                let currentSeconds = Math.floor(currentTime % 60);
+                if (currentSeconds < 10) {
+                    currentSeconds = `0${currentSeconds}`;
+                }
+                currentTimeEl.textContent = `${currentMinutes}:${currentSeconds}`;
+            }
+        }
+        
+        // Set progress bar when clicked
+        function setProgress(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        }
+        
+        // Next song
+        function nextSong() {
+            currentSongIndex++;
+            if (currentSongIndex > songs.length - 1) {
+                currentSongIndex = 0;
+            }
+            loadSong(songs[currentSongIndex]);
+            if (isPlaying) {
+                playSong();
+            }
+        }
+        
+        // Previous song
+        function prevSong() {
+            currentSongIndex--;
+            if (currentSongIndex < 0) {
+                currentSongIndex = songs.length - 1;
+            }
+            loadSong(songs[currentSongIndex]);
+            if (isPlaying) {
+                playSong();
+            }
+        }
+        
+        // Update duration display
+        function updateDuration() {
+            const durationMinutes = Math.floor(audio.duration / 60);
+            let durationSeconds = Math.floor(audio.duration % 60);
+            if (durationSeconds < 10) {
+                durationSeconds = `0${durationSeconds}`;
+            }
+            durationEl.textContent = `${durationMinutes}:${durationSeconds}`;
+        }
+        
+        // Set volume
+        function setVolume() {
+            audio.volume = this.value;
+        }
+        
+        // Event listeners
+        playPauseBtn.addEventListener('click', () => {
+            isPlaying ? pauseSong() : playSong();
+        });
+        
+        prevBtn.addEventListener('click', prevSong);
+        nextBtn.addEventListener('click', nextSong);
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('ended', nextSong);
+        audio.addEventListener('loadedmetadata', updateDuration);
+        progressContainer.addEventListener('click', setProgress);
+        volumeSlider.addEventListener('input', setVolume);
+        
+        // Load first song
+        loadSong(songs[currentSongIndex]);
+    </script>
+</body>
+</html>
